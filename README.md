@@ -1,5 +1,8 @@
 # <p align="center">📒PureWriterBackup: Yet another convert tool for PureWriter</p>
 
+## What you can get
+Get all folders with all your txt and markdown files.
+
 ## Usage
 ### How to get *.db file
 - old version: copy the `*.db` file from phone to PC directly

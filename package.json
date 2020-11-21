@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "start": "nodemon index.ts"
+  },
+  "dependencies": {
+    "sqlite": "^4.0.17",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.9",
+    "nodemon": "^2.0.6",
+    "ts-node": "^9.0.0"
+  }
+}

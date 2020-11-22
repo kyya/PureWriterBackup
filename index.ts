@@ -8,12 +8,7 @@ export interface Article {
   title: string;
   content: string;
   extension: "txt" | "md";
-  updateTime: number;
-  createTime: number;
   folderId: string;
-  categoryId?: string;
-  rank: number;
-  editorId: number;
 }
 
 export interface Folder {
@@ -22,13 +17,12 @@ export interface Folder {
   description?: string;
 }
 
+export interface Articled extends Article {
+  folderName: string;
+}
+
 const INPUT = resolve(__dirname, "backups");
 const OUTPUT = resolve(__dirname, "output");
-
-const getFolderId = (folders: Folder[], article: Article): Folder => {
-  const folder = folders.find((it) => it.id === article.folderId);
-  return folder ?? { name: "Untitled" };
-};
 
 function findOneFile(path: string, extension: RegExp) {
   if (!existsSync(path)) {
@@ -64,19 +58,21 @@ const escape = (title: string) => title.replace(/\?/, "");
     driver: Database,
   });
 
-  const articles = await db.all<Article[]>(`SELECT * FROM Article`);
-  const folders = await db.all<Folder[]>(`SELECT * FROM Folder`);
+  const articles = await db.all<Articled[]>(
+    `SELECT Article.title, Article.content, Article.extension, Folder.name as folderName FROM Article, Folder WHERE Article.folderId=Folder.id`
+  );
+  console.log(articles);
 
-  const saveArticle = (article: Article) => {
-    const { title, content, extension } = article;
-    const folder = getFolderId(folders, article);
-    const { name: folderName } = folder;
+  const saveArticle = (article: Articled) => {
+    const { title, content, extension, folderName } = article;
     const pathToSave = resolve(OUTPUT, folderName);
-    const safeTitle = title === "" ? "Untitled" : escape(title);
-    const fileToSave = resolve(pathToSave, `${safeTitle}.${extension}`);
+
     if (!existsSync(pathToSave)) {
       mkdirSync(pathToSave);
     }
+
+    const safeTitle = title === "" ? "Untitled" : escape(title);
+    const fileToSave = resolve(pathToSave, `${safeTitle}.${extension}`);
     writeFileSync(fileToSave, content);
   };
   articles.forEach(saveArticle);
